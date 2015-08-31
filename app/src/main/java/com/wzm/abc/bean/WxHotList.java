@@ -1,6 +1,6 @@
 package com.wzm.abc.bean;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by zhiyou007 on 2015/8/31.
@@ -8,7 +8,7 @@ import java.util.List;
 public class WxHotList {
     private String status;
     private String mesg;
-    private List<WxHotList> list;
+    private ArrayList<WxHotItem> list;
 
     public String getStatus() {
         return status;
@@ -26,11 +26,11 @@ public class WxHotList {
         this.mesg = mesg;
     }
 
-    public List<WxHotList> getList() {
+    public ArrayList<WxHotItem> getList() {
         return list;
     }
 
-    public void setList(List<WxHotList> list) {
+    public void setList(ArrayList<WxHotItem> list) {
         this.list = list;
     }
 }

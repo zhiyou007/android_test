@@ -1,11 +1,17 @@
 package com.wzm.abc;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -13,6 +19,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.wzm.abc.adapter.CommonAdapter;
+import com.wzm.abc.adapter.ViewHolder;
+import com.wzm.abc.bean.WxHotItem;
 import com.wzm.abc.bean.WxHotList;
 import com.wzm.abc.utils.VolleyHelper;
 
@@ -20,23 +30,63 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends Activity {
-
+    private ListView mListView = null;
     private TextView tv_info ;
+    private CommonAdapter<WxHotItem> mAdapter = null;
+    private Context mContext = null;
+    private ArrayList<WxHotItem> mList = new ArrayList<WxHotItem>();
+    private int page = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mContext = this;
         tv_info = (TextView)findViewById(R.id.tv_info);
+        mListView = (ListView)findViewById(R.id.listView);
 
+        mAdapter = new CommonAdapter<WxHotItem>(mContext,mList,R.layout.cell_wxhot_item) {
+            @Override
+            public void convert(ViewHolder helper, WxHotItem item, int pos) {
+                TextView tv_title = (TextView)helper.getView(R.id.textView);
+                tv_title.setText(Html.fromHtml(item.getTitle()));
+
+                ImageView iv_img = (ImageView)helper.getView(R.id.imageView);
+
+                if (!TextUtils.isEmpty(item.getSrc())) {
+                    ImageLoader.getInstance().displayImage(item.getSrc(), iv_img);
+                }
+            }
+        };
+
+        mListView.setAdapter(mAdapter);
+
+
+    }
+
+    public void getdata()
+    {
+        page = 1;
+        geturl();
+    }
+
+    public void loadmore()
+    {
+        page++;
+        geturl();
+    }
+
+
+    public void geturl()
+    {
         String wxHot = "http://apis.baidu.com/antelope/wechat/article";
         try {
             wxHot = wxHot +"?keyword="+ URLEncoder.encode("美文", "utf-8") ;
-            wxHot = wxHot +"&pageNo=1";
+            wxHot = wxHot +"&pageNo="+page;
         } catch (UnsupportedEncodingException e) {
 
         }
@@ -47,8 +97,19 @@ public class MainActivity extends Activity {
                     public void onResponse(JSONObject response) {
                         Gson gson = new Gson();
                         WxHotList whl = gson.fromJson(response.toString(), WxHotList.class);
+                        if(null!=whl)
+                        {
+                            if(whl.getStatus().equals("200"))
+                            {
+                                mList.addAll(whl.getList());
+                                mAdapter.notifyDataSetChanged();
+                            }else{
+                                Toast.makeText(mContext,whl.getMesg(),Toast.LENGTH_SHORT).show();
+                            }
+
+                            Log.i("wzm","size:"+mList.size());
+                        }
                         tv_info.setText(response.toString());
-                        Log.i("wzm",response.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -65,9 +126,10 @@ public class MainActivity extends Activity {
         };
         jsonObjRequest.setShouldCache(true);
         VolleyHelper.getInstance().getRequestQueue().add(jsonObjRequest);
-
-
     }
+
+
+
 
 
     @Override
