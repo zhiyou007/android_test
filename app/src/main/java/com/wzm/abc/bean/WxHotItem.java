@@ -7,7 +7,6 @@ public class WxHotItem {
     private String src;
     private String title;
     private String wxurl;
-    private String introduction;
     private String wxcontent;
 
     public String getSrc() {
@@ -32,14 +31,6 @@ public class WxHotItem {
 
     public void setWxurl(String wxurl) {
         this.wxurl = wxurl;
-    }
-
-    public String getIntroduction() {
-        return introduction;
-    }
-
-    public void setIntroduction(String introduction) {
-        this.introduction = introduction;
     }
 
     public String getWxcontent() {

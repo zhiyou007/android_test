@@ -55,6 +55,9 @@ public class MainActivity extends Activity {
                 TextView tv_title = (TextView)helper.getView(R.id.textView);
                 tv_title.setText(Html.fromHtml(item.getTitle()));
 
+                TextView tv_content = (TextView)helper.getView(R.id.tv_intro);
+                tv_content.setText(Html.fromHtml(item.getWxcontent()));
+
                 ImageView iv_img = (ImageView)helper.getView(R.id.imageView);
 
                 if (!TextUtils.isEmpty(item.getSrc())) {
@@ -65,7 +68,7 @@ public class MainActivity extends Activity {
 
         mListView.setAdapter(mAdapter);
 
-
+        getdata();
     }
 
     public void getdata()
@@ -95,6 +98,7 @@ public class MainActivity extends Activity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.i("wzm",response.toString());
                         Gson gson = new Gson();
                         WxHotList whl = gson.fromJson(response.toString(), WxHotList.class);
                         if(null!=whl)
