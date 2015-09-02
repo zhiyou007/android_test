@@ -2,12 +2,15 @@ package com.wzm.abc;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import com.wzm.abc.adapter.CommonAdapter;
 import com.wzm.abc.adapter.ViewHolder;
 import com.wzm.abc.bean.WxHotItem;
 import com.wzm.abc.bean.WxHotList;
+import com.wzm.abc.ui.activity.WebActivity;
 import com.wzm.abc.utils.VolleyHelper;
 
 import org.json.JSONObject;
@@ -67,6 +71,22 @@ public class MainActivity extends Activity {
         };
 
         mListView.setAdapter(mAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                WxHotItem whi = mList.get(position);
+
+                Intent intent = new Intent(mContext, WebActivity.class);
+                Bundle bd = new Bundle();
+                bd.putString("BUNDLE_KEY_URL",whi.getWxurl());
+                bd.putString("BUNDLE_KEY_TITLE",whi.getTitle());
+                bd.putBoolean("BUNDLE_KEY_SHOW_BOTTOM_BAR", true);
+                intent.putExtras(bd);
+                startActivity(intent);
+            }
+        });
+
 
         getdata();
     }
